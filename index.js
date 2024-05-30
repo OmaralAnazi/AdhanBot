@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const path = require('path');
@@ -123,5 +125,5 @@ const { getPrayerTimes } = require('./prayerTimes');
     });
   }
 
-  client.login('');
+  client.login(process.env.DISCORD_BOT_TOKEN);
 })();
