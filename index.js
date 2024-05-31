@@ -4,6 +4,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const path = require('path');
 const sodium = require('libsodium-wrappers');
+const moment = require('moment-timezone');
 const { getPrayerTimes } = require('./prayerTimes');
 
 (async () => {
@@ -28,9 +29,9 @@ const { getPrayerTimes } = require('./prayerTimes');
   }
 
   function scheduleDailyUpdate() {
-      const now = new Date();
-      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-      const timeUntilMidnight = nextMidnight - now;
+    const now = moment().tz('Asia/Riyadh');
+    const nextMidnight = moment().tz('Asia/Riyadh').endOf('day').add(1, 'second');
+    const timeUntilMidnight = nextMidnight.diff(now);
 
       setTimeout(async () => {
           await updatePrayerTimes();
@@ -44,11 +45,11 @@ const { getPrayerTimes } = require('./prayerTimes');
 
   function scheduleAdhan() {
       console.log('Scheduling Adhan times...');
-      const now = new Date();
+      const now = moment().tz('Asia/Riyadh');
 
       for (const [prayer, time] of Object.entries(prayerTimes)) {
           const [hours, minutes] = time.split(':');
-          const prayerTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hours), parseInt(minutes), 0, 0);
+          const prayerTime = moment().tz('Asia/Riyadh').set({ hour: parseInt(hours), minute: parseInt(minutes), second: 0 });
 
           if (prayerTime > now) {
               const delay = prayerTime - now;
